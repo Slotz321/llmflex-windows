@@ -1,5 +1,6 @@
-﻿using LLMFlexWin.Models;
+using LLMFlexWin.Models;
 using LLMFlexWin.Storage;
+using LLMFlexWin.Targets;
 
 var profileStore = new ProfileStore();
 var snapshotStore = new SnapshotStore();
@@ -23,7 +24,6 @@ switch (command)
 
     case "list":
         var profiles = profileStore.All();
-
         if (profiles.Count == 0)
         {
             Console.WriteLine("Profiles: none yet");
@@ -58,23 +58,23 @@ switch (command)
         break;
 
     case "apply":
-        var profileName = args.Length > 1 ? string.Join(" ", args[1..]) : "";
-        if (string.IsNullOrWhiteSpace(profileName))
-        {
-            Console.WriteLine("Apply requires a profile name.");
-            return;
-        }
-
-        var matched = profileStore.FindByName(profileName);
-        if (matched is null)
-        {
-            Console.WriteLine($"Profile not found: {profileName}");
-            return;
-        }
+        var applyProfile = FindProfileFromArgs(args, "Apply");
+        if (applyProfile is null) return;
 
         Console.WriteLine("Matched profile:");
-        PrintProfile(matched, "");
+        PrintProfile(applyProfile, "");
         Console.WriteLine("Codex config write: not implemented yet");
+        break;
+
+    case "preview":
+        var previewProfile = FindProfileFromArgs(args, "Preview");
+        if (previewProfile is null) return;
+
+        Console.WriteLine($"Previewing Codex config for: {previewProfile.Name}");
+        Console.WriteLine();
+        Console.WriteLine(CodexConfigRenderer.RenderBlock(previewProfile));
+        Console.WriteLine();
+        Console.WriteLine("No files were modified.");
         break;
 
     case "snapshot":
@@ -96,9 +96,29 @@ switch (command)
         Console.WriteLine("  list");
         Console.WriteLine("  add-profile <name> <provider> <baseUrl> <modelName>");
         Console.WriteLine("  apply <profileName>");
+        Console.WriteLine("  preview <profileName>");
         Console.WriteLine("  snapshot");
         Console.WriteLine("  restore");
         break;
+}
+
+Profile? FindProfileFromArgs(string[] commandArgs, string commandName)
+{
+    var profileName = commandArgs.Length > 1 ? string.Join(" ", commandArgs[1..]) : "";
+    if (string.IsNullOrWhiteSpace(profileName))
+    {
+        Console.WriteLine($"{commandName} requires a profile name.");
+        return null;
+    }
+
+    var profile = profileStore.FindByName(profileName);
+    if (profile is null)
+    {
+        Console.WriteLine($"Profile not found: {profileName}");
+        return null;
+    }
+
+    return profile;
 }
 
 void CaptureTarget(string path, string tag)
