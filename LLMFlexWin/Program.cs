@@ -113,8 +113,20 @@ switch (command)
         var writtenPath = writer.Apply(applyProfile);
 
         Console.WriteLine($"Codex config written: {writtenPath}");
-        Console.WriteLine($"API key:              {(secretStore.HasKey(applyProfile.Id) ? "present" : "missing")}");
-        Console.WriteLine("Codex auth write:     not implemented yet");
+
+        var storedApiKey = secretStore.GetKey(applyProfile.Id);
+        if (string.IsNullOrWhiteSpace(storedApiKey))
+        {
+            Console.WriteLine("API key:              missing");
+            Console.WriteLine("Codex auth write:     skipped");
+            break;
+        }
+
+        var authWriter = new CodexAuthWriter(codexAuthPath, snapshotStore);
+        var authPath = authWriter.Apply(storedApiKey);
+
+        Console.WriteLine("API key:              present");
+        Console.WriteLine($"Codex auth written:   {authPath}");
         break;
 
     case "preview":
