@@ -4,6 +4,7 @@ using LLMFlexWin.Targets;
 
 var profileStore = new ProfileStore();
 var snapshotStore = new SnapshotStore();
+var secretStore = new LocalSecretStore();
 
 var codexConfigPath = Path.Combine(UserHome(), ".codex", "config.toml");
 var codexAuthPath = Path.Combine(UserHome(), ".codex", "auth.json");
@@ -20,6 +21,7 @@ switch (command)
         Console.WriteLine($"Snapshots:      {snapshotStore.Count()}");
         Console.WriteLine($"Profile store:  {profileStore.ProfilesPath}");
         Console.WriteLine($"Snapshot store: {snapshotStore.SnapshotRoot}");
+        Console.WriteLine($"Secret store:   {secretStore.SecretsPath}");
         break;
 
     case "list":
@@ -34,6 +36,7 @@ switch (command)
         foreach (var profile in profiles)
         {
             PrintProfile(profile, "- ");
+            Console.WriteLine($"  API key:  {(secretStore.HasKey(profile.Id) ? "present" : "missing")}");
         }
         break;
 
@@ -57,6 +60,48 @@ switch (command)
         Console.WriteLine($"Saved profile: {newProfile.Name}");
         break;
 
+    case "set-key":
+        if (args.Length < 3)
+        {
+            Console.WriteLine("Usage:");
+            Console.WriteLine("  set-key <profileName> <apiKey>");
+            return;
+        }
+
+        var setKeyProfileName = args[1];
+        var apiKey = args[2];
+
+        var setKeyProfile = profileStore.FindByName(setKeyProfileName);
+        if (setKeyProfile is null)
+        {
+            Console.WriteLine($"Profile not found: {setKeyProfileName}");
+            return;
+        }
+
+        secretStore.SetKey(setKeyProfile.Id, apiKey);
+        Console.WriteLine($"Saved key for: {setKeyProfile.Name}");
+        break;
+
+    case "has-key":
+        if (args.Length < 2)
+        {
+            Console.WriteLine("Usage:");
+            Console.WriteLine("  has-key <profileName>");
+            return;
+        }
+
+        var hasKeyProfileName = args[1];
+
+        var hasKeyProfile = profileStore.FindByName(hasKeyProfileName);
+        if (hasKeyProfile is null)
+        {
+            Console.WriteLine($"Profile not found: {hasKeyProfileName}");
+            return;
+        }
+
+        Console.WriteLine($"API key for {hasKeyProfile.Name}: {(secretStore.HasKey(hasKeyProfile.Id) ? "present" : "missing")}");
+        break;
+
     case "apply":
         var applyProfile = FindProfileFromArgs(args, "Apply");
         if (applyProfile is null) return;
@@ -68,6 +113,7 @@ switch (command)
         var writtenPath = writer.Apply(applyProfile);
 
         Console.WriteLine($"Codex config written: {writtenPath}");
+        Console.WriteLine($"API key:              {(secretStore.HasKey(applyProfile.Id) ? "present" : "missing")}");
         Console.WriteLine("Codex auth write:     not implemented yet");
         break;
 
@@ -100,6 +146,8 @@ switch (command)
         Console.WriteLine("  status");
         Console.WriteLine("  list");
         Console.WriteLine("  add-profile <name> <provider> <baseUrl> <modelName>");
+        Console.WriteLine("  set-key <profileName> <apiKey>");
+        Console.WriteLine("  has-key <profileName>");
         Console.WriteLine("  apply <profileName>");
         Console.WriteLine("  preview <profileName>");
         Console.WriteLine("  snapshot");

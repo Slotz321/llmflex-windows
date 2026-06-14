@@ -5,3 +5,5 @@ obj/
 *.suo
 *.rsuser
 TestResults/
+secrets.local.json
+*.local.json
