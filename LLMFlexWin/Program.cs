@@ -65,6 +65,7 @@ switch (command)
         {
             Console.WriteLine("Usage:");
             Console.WriteLine("  set-key <profileName> <apiKey>");
+        Console.WriteLine("  set-key-prompt <profileName>");
             return;
         }
 
@@ -80,6 +81,37 @@ switch (command)
 
         secretStore.SetKey(setKeyProfile.Id, apiKey);
         Console.WriteLine($"Saved key for: {setKeyProfile.Name}");
+        break;
+
+    case "set-key-prompt":
+        if (args.Length < 2)
+        {
+            Console.WriteLine("Usage:");
+            Console.WriteLine("  set-key-prompt <profileName>");
+            return;
+        }
+
+        var promptProfileName = args[1];
+
+        var promptProfile = profileStore.FindByName(promptProfileName);
+        if (promptProfile is null)
+        {
+            Console.WriteLine($"Profile not found: {promptProfileName}");
+            return;
+        }
+
+        Console.Write("Enter API key: ");
+        var promptedKey = ReadSecretFromConsole();
+        Console.WriteLine();
+
+        if (string.IsNullOrWhiteSpace(promptedKey))
+        {
+            Console.WriteLine("API key was empty. Nothing saved.");
+            return;
+        }
+
+        secretStore.SetKey(promptProfile.Id, promptedKey);
+        Console.WriteLine($"Saved key for: {promptProfile.Name}");
         break;
 
     case "remove-key":
@@ -181,6 +213,7 @@ switch (command)
         Console.WriteLine("  list");
         Console.WriteLine("  add-profile <name> <provider> <baseUrl> <modelName>");
         Console.WriteLine("  set-key <profileName> <apiKey>");
+        Console.WriteLine("  set-key-prompt <profileName>");
         Console.WriteLine("  remove-key <profileName>");
         Console.WriteLine("  has-key <profileName>");
         Console.WriteLine("  apply <profileName>");
@@ -237,6 +270,37 @@ static void PrintProfile(Profile profile, string prefix)
     Console.WriteLine($"  Provider: {profile.Provider}");
     Console.WriteLine($"  Base URL: {profile.BaseUrl}");
     Console.WriteLine($"  Model:    {profile.ModelName}");
+}
+
+static string ReadSecretFromConsole()
+{
+    var chars = new List<char>();
+
+    while (true)
+    {
+        var key = Console.ReadKey(intercept: true);
+
+        if (key.Key == ConsoleKey.Enter)
+        {
+            break;
+        }
+
+        if (key.Key == ConsoleKey.Backspace)
+        {
+            if (chars.Count > 0)
+            {
+                chars.RemoveAt(chars.Count - 1);
+            }
+            continue;
+        }
+
+        if (!char.IsControl(key.KeyChar))
+        {
+            chars.Add(key.KeyChar);
+        }
+    }
+
+    return new string(chars.ToArray());
 }
 
 static string UserHome()
