@@ -63,7 +63,12 @@ switch (command)
 
         Console.WriteLine("Matched profile:");
         PrintProfile(applyProfile, "");
-        Console.WriteLine("Codex config write: not implemented yet");
+
+        var writer = new CodexConfigWriter(codexConfigPath, snapshotStore);
+        var writtenPath = writer.Apply(applyProfile);
+
+        Console.WriteLine($"Codex config written: {writtenPath}");
+        Console.WriteLine("Codex auth write:     not implemented yet");
         break;
 
     case "preview":
