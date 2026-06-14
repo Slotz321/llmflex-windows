@@ -82,11 +82,33 @@ switch (command)
         Console.WriteLine($"Saved key for: {setKeyProfile.Name}");
         break;
 
+    case "remove-key":
+        if (args.Length < 2)
+        {
+            Console.WriteLine("Usage:");
+            Console.WriteLine("  remove-key <profileName>");
+            return;
+        }
+
+        var removeKeyProfileName = args[1];
+
+        var removeKeyProfile = profileStore.FindByName(removeKeyProfileName);
+        if (removeKeyProfile is null)
+        {
+            Console.WriteLine($"Profile not found: {removeKeyProfileName}");
+            return;
+        }
+
+        secretStore.DeleteKey(removeKeyProfile.Id);
+        Console.WriteLine($"Removed key for: {removeKeyProfile.Name}");
+        break;
+
     case "has-key":
         if (args.Length < 2)
         {
             Console.WriteLine("Usage:");
-            Console.WriteLine("  has-key <profileName>");
+            Console.WriteLine("  remove-key <profileName>");
+        Console.WriteLine("  has-key <profileName>");
             return;
         }
 
@@ -159,6 +181,7 @@ switch (command)
         Console.WriteLine("  list");
         Console.WriteLine("  add-profile <name> <provider> <baseUrl> <modelName>");
         Console.WriteLine("  set-key <profileName> <apiKey>");
+        Console.WriteLine("  remove-key <profileName>");
         Console.WriteLine("  has-key <profileName>");
         Console.WriteLine("  apply <profileName>");
         Console.WriteLine("  preview <profileName>");
