@@ -2,6 +2,14 @@
 
 This roadmap is phased so the Windows prototype can become safer and more contributor-ready without taking on too much at once.
 
+## Public Work Coordination
+
+Roadmap items should become GitHub issues when they are ready for outside contribution. Use issue labels to indicate type, scope, and difficulty where useful.
+
+Active work should avoid hidden duplication. Check open issues and pull requests before starting, and reflect completed work in commits, closed issues, or updated documentation.
+
+This public roadmap applies only to this repository unless another repository is explicitly published. Private/internal projects are not part of this public roadmap.
+
 ## Phase 1: Documentation And Tests
 
 - Keep README commands aligned with `Program.cs`.

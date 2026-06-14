@@ -13,6 +13,16 @@ Thanks for helping make LLMFlex Windows safer and more useful. This project is e
 
 Direct collaborator access is not given by default. The normal contribution path is fork plus pull request.
 
+## Repository as Source of Truth
+
+This repository is the current public-facing construction and collaboration lane for LLMFlex Windows. Coordinate public work through visible GitHub issues, roadmap entries, and pull requests in this repository.
+
+Before starting work, check existing issues and the roadmap for related discussion. Major work should start with an issue, and pull requests should reference a visible issue when practical. Direct collaborator access is not given by default; contributors should use the fork and pull request workflow.
+
+Do not assume hidden ChatGPT/Codex planning, private chats, or undocumented direction represents approved public work. Any non-sensitive planning that outside contributors need should be converted into public issues, roadmap entries, or documentation before contributors are expected to act on it.
+
+Do not post secrets, private config, client data, government-adjacent information, financial-system details, or sensitive security details publicly. Other projects remain private/internal unless they are explicitly published separately.
+
 ## Keep Pull Requests Focused
 
 Good pull request scopes:

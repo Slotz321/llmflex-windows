@@ -180,6 +180,8 @@ Good contribution areas include:
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md), [ROADMAP.md](ROADMAP.md), and [SECURITY.md](SECURITY.md) before opening a pull request.
 
+This repository is the current public-facing construction and collaboration surface. Public coordination should happen through visible GitHub issues, roadmap updates, and pull requests.
+
 ## Attribution
 
 This Windows prototype is inspired by Futureformed's original LLMFlex concept and project direction. Futureformed's work established the core idea of switching AI coding tool model/provider profiles with less manual config editing. This repository explores a Windows-native path for that idea.
